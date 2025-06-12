@@ -501,11 +501,11 @@ def parsekeys(module, lines):
     return keys
 
 
-def writefile(module, filename, content):
+def writefile(module, filename, content, encoding=None):
     dummy, tmp_path = tempfile.mkstemp()
 
     try:
-        with open(tmp_path, "w") as f:
+        with open(tmp_path, "w", encoding=encoding) as f:
             f.write(content)
     except IOError as e:
         module.add_cleanup_file(tmp_path)
@@ -563,6 +563,7 @@ def enforce_state(module, params):
     comment = params.get("comment", None)
     follow = params.get('follow', False)
     error_msg = "Error getting key from: %s"
+    encoding = params.get("encoding", None)
 
     # if the key is a url or file, request it and use it as key source
     if key.startswith("http"):
@@ -598,6 +599,8 @@ def enforce_state(module, params):
     do_write = False
     params["keyfile"] = keyfile(module, user, do_write, path, manage_dir)
     existing_content = readfile(params["keyfile"])
+    params["Testing_Module_Args"] = 'This is Testing of posix Collection Changes'
+    params["Dev_Module_Args"] = 'This is Dev posix Collection Changes'
     existing_keys = parsekeys(module, existing_content)
 
     # Add a place holder for keys that should exist in the state=present and
@@ -684,7 +687,7 @@ def enforce_state(module, params):
             params['diff'] = diff
 
         if not module.check_mode:
-            writefile(module, filename, new_content)
+            writefile(module, filename, new_content, encoding)
         params['changed'] = True
 
     return params
@@ -703,6 +706,7 @@ def main():
             comment=dict(type='str'),
             validate_certs=dict(type='bool', default=True),
             follow=dict(type='bool', default=False),
+            encoding=dict(type='str'),
         ),
         supports_check_mode=True,
     )
