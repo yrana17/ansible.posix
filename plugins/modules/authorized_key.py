@@ -599,8 +599,6 @@ def enforce_state(module, params):
     do_write = False
     params["keyfile"] = keyfile(module, user, do_write, path, manage_dir)
     existing_content = readfile(params["keyfile"])
-    params["Testing_Module_Args"] = 'This is Testing of posix Collection Changes'
-    params["Dev_Module_Args"] = 'This is Dev posix Collection Changes'
     existing_keys = parsekeys(module, existing_content)
 
     # Add a place holder for keys that should exist in the state=present and
